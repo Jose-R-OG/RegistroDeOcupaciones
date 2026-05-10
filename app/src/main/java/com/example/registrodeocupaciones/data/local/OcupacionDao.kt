@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface OcupacionDao {
-    @Upsert // Inserta si es nuevo, actualiza si ya existe
+    @Upsert
     suspend fun upsert(ocupacion: OcupacionEntity)
 
     @Delete
@@ -14,7 +14,6 @@ interface OcupacionDao {
     @Query("SELECT * FROM Ocupaciones WHERE ocupacionId = :id")
     suspend fun getById(id: Int): OcupacionEntity?
 
-    // Vital para validar que no haya descripciones duplicadas
     @Query("SELECT * FROM Ocupaciones WHERE descripcion = :descripcion LIMIT 1")
     suspend fun getByDescripcion(descripcion: String): OcupacionEntity?
 

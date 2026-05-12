@@ -1,27 +1,31 @@
 package com.example.registrodeocupaciones.domain.usecase
 
 import com.example.registrodeocupaciones.data.mapper.toEntity
-import com.example.registrodeocupaciones.data.repository.OcupacionRepository
 import com.example.registrodeocupaciones.domain.model.Ocupacion
+import com.example.registrodeocupaciones.domain.repository.OcupacionRepository
 import javax.inject.Inject
+import kotlin.compareTo
 
-class UpsertOcupacionUseCase @Inject constructor(
-    private val repository: OcupacionRepository
-) {
-    suspend operator fun invoke(ocupacion: Ocupacion): Result<Unit> {
-        val descRes = validateDescripcion(ocupacion.descripcion)
-        if (!descRes.isValid) return Result.failure(Exception(descRes.error))
-
-        val sueldoRes = validateSueldo(ocupacion.sueldo.toString())
-        if (!sueldoRes.isValid) return Result.failure(Exception(sueldoRes.error))
-
-        val existe = repository.getByDescripcion(ocupacion.descripcion)
-        if (existe != null && existe.ocupacionId != ocupacion.ocupacionId) {
-            return Result.failure(Exception("Ya existe una ocupación con esta descripción"))
+class UpsertOcupacionUseCase @Inject constructor(private val repository: OcupacionRepository) {
+    suspend operator fun invoke(ocupacion: Ocupacion): Result<Int>
+    {
+        if(ocupacion.descripcion.isBlank())
+        {
+            return Result.failure(IllegalArgumentException("La Descripcion es campo Obligatorio"))
         }
 
-        return runCatching {
-            repository.upsert(ocupacion.toEntity())
+        if(ocupacion.sueldo <= 0.0)
+        {
+            return Result.failure(IllegalArgumentException("El sueldo debe ser mayor a cero"))
         }
+
+        val existe = repository.existsByDescripcion(ocupacion.descripcion.trim())
+
+        if(existe && ocupacion.ocupacionId == 0)
+        {
+            return Result.failure(IllegalArgumentException("Ya existe ocupacion con esta descripcion"))
+        }
+
+        return runCatching { repository.upsert(ocupacion) }
     }
 }

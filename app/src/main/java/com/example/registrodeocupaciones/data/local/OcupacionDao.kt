@@ -5,18 +5,24 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface OcupacionDao {
-    @Upsert
-    suspend fun upsert(ocupacion: OcupacionEntity)
+    @Query(value = "SELECT * FROM ocupaciones ORDER BY ocupacionId DESC")
+    fun  observeAll(): Flow<List<OcupacionEntity>>
 
-    @Delete
-    suspend fun delete(ocupacion: OcupacionEntity)
-
-    @Query("SELECT * FROM Ocupaciones WHERE ocupacionId = :id")
+    @Query(value = "SELECT * From ocupaciones WHERE ocupacionId = :id")
     suspend fun getById(id: Int): OcupacionEntity?
 
-    @Query("SELECT * FROM Ocupaciones WHERE descripcion = :descripcion LIMIT 1")
-    suspend fun getByDescripcion(descripcion: String): OcupacionEntity?
+    @Upsert
+    suspend fun upsert(entity: OcupacionEntity)
 
-    @Query("SELECT * FROM Ocupaciones")
-    fun getAll(): Flow<List<OcupacionEntity>>
+    @Delete
+    suspend fun delete(entity: OcupacionEntity)
+
+    @Query("DELETE FROM ocupaciones WHERE ocupacionId = :id")
+    suspend fun deleteById(id: Int)
+
+    @Query(value = "SELECT EXISTS(SELECT 1 FROM ocupaciones WHERE ocupacionId = :id)")
+    suspend fun exists(id: Int): Boolean
+
+    @Query(value = "SELECT EXISTS(SELECT 1 FROM ocupaciones WHERE descripcion = :descripcion)")
+    suspend fun existsByDescripcion(descripcion: String): Boolean
 }

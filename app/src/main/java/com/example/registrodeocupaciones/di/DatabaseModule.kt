@@ -14,19 +14,21 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): OcupacionDb {
+    fun ProvideOcupacionDatabase(@ApplicationContext context: Context): OcupacionDb
+    {
         return Room.databaseBuilder(
             context,
             OcupacionDb::class.java,
-            "Ocupaciones.db"
+            "Ocupacion.db"
         ).build()
     }
 
     @Provides
-    fun provideOcupacionDao(db: OcupacionDb): OcupacionDao {
-        return db.ocupacionDao()
+    @Singleton
+    fun provideOcupacionDao(database: OcupacionDb): OcupacionDao
+    {
+        return database.ocupacionDao()
     }
 }

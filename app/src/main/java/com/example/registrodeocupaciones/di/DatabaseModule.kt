@@ -3,7 +3,7 @@ package com.example.registrodeocupaciones.di
 import android.content.Context
 import androidx.room.Room
 import com.example.registrodeocupaciones.data.local.OcupacionDao
-import com.example.registrodeocupaciones.data.local.OcupacionDb
+import com.example.registrodeocupaciones.data.database.OcupacionDb
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

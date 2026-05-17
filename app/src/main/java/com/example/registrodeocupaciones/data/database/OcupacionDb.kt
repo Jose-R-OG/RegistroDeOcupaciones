@@ -1,7 +1,9 @@
-package com.example.registrodeocupaciones.data.local
+package com.example.registrodeocupaciones.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.registrodeocupaciones.data.local.OcupacionDao
+import com.example.registrodeocupaciones.data.local.OcupacionEntity
 
 @Database(
     entities = [OcupacionEntity::class],

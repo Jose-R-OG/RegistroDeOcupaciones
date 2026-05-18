@@ -8,7 +8,7 @@ plugins {
 
 
 android {
-    namespace = "com.example.registrodeocupacion"
+    namespace = "com.example.registrodeocupaciones"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -16,7 +16,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.registrodeocupacion"
+        applicationId = "com.example.registrodeocupaciones"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

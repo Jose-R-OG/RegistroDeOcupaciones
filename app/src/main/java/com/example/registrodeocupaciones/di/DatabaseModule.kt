@@ -23,7 +23,9 @@ object DatabaseModule {
             context,
             OcupacionDb::class.java,
             "Ocupacion.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

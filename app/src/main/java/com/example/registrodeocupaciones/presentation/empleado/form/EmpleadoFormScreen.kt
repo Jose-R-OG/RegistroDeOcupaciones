@@ -50,7 +50,7 @@ import kotlin.toString
 @Composable
 fun EmpleadoFormScreen(
     viewModel: EmpleadoFormViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onNavigateBack: () -> Unit
 ){
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -60,7 +60,7 @@ fun EmpleadoFormScreen(
 
     LaunchedEffect(state.saved, state.deleted) {
         if (state.saved || state.deleted){
-            onBack()
+            onNavigateBack()
         }
     }
 
@@ -69,7 +69,7 @@ fun EmpleadoFormScreen(
             TopAppBar(
                 title = { Text(if (state.isNew) "Nuevo empleado" else "Editar empleado") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Volver") }
+                    IconButton(onClick = onNavigateBack) { Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Volver") }
                 }
             )
         }

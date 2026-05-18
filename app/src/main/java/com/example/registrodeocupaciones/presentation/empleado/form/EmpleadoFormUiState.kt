@@ -3,7 +3,7 @@ package com.example.registrodeocupaciones.presentation.empleado.form
 
 import java.time.LocalDate
 
-class EmpleadoFormUiState (
+data class EmpleadoFormUiState (
     val empleadoId: Int? = null,
     val fechaIngreso: LocalDate = LocalDate.now(),
     val nombres: String = "",

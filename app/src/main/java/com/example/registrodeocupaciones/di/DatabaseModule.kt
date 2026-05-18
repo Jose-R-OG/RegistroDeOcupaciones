@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.registrodeocupaciones.data.local.OcupacionDao
 import com.example.registrodeocupaciones.data.database.OcupacionDb
+import com.example.registrodeocupaciones.data.empleado.local.EmpleadoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,5 +31,10 @@ object DatabaseModule {
     fun provideOcupacionDao(database: OcupacionDb): OcupacionDao
     {
         return database.ocupacionDao()
+    }
+
+    @Provides
+    fun provideEmpleadoDao(db: OcupacionDb): EmpleadoDao {
+        return db.empleadoDao()
     }
 }

@@ -3,7 +3,8 @@ package com.example.registrodeocupaciones.di
 import android.content.Context
 import androidx.room.Room
 import com.example.registrodeocupaciones.data.local.OcupacionDao
-import com.example.registrodeocupaciones.data.local.OcupacionDb
+import com.example.registrodeocupaciones.data.database.OcupacionDb
+import com.example.registrodeocupaciones.data.empleado.local.EmpleadoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,9 @@ object DatabaseModule {
             context,
             OcupacionDb::class.java,
             "Ocupacion.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
@@ -30,5 +33,10 @@ object DatabaseModule {
     fun provideOcupacionDao(database: OcupacionDb): OcupacionDao
     {
         return database.ocupacionDao()
+    }
+
+    @Provides
+    fun provideEmpleadoDao(db: OcupacionDb): EmpleadoDao {
+        return db.empleadoDao()
     }
 }

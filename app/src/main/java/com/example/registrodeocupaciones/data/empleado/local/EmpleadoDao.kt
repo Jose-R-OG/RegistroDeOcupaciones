@@ -21,4 +21,7 @@ interface EmpleadoDao {
     @Query(value = "select exists (select 1 from empleados Where empleadoId =:id)")
     suspend fun exists(id: Int): Boolean
 
+    @Query("SELECT * FROM empleados WHERE nombres = :nombres")
+    suspend fun getByNombres(nombres: String): List<EmpleadoEntity>
+
 }

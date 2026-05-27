@@ -37,4 +37,7 @@ class EmpleadoRepositoryImpl @Inject constructor(
     override suspend fun exists(Id: Int): Boolean {
         return localDataSource.exists(Id)
     }
+
+    override suspend fun getByNombres(nombres: String): List<Empleado> =
+        localDataSource.getByNombres(nombres).map { it.toDomain() }
 }

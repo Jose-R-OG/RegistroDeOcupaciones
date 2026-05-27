@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.registrodeocupaciones.presentation.HoraExtra.list.HoraExtraListScreen
 
 // Importaciones de Ocupaciones
 import com.example.registrodeocupaciones.presentation.ocupaciones.list.OcupacionlistScreen
@@ -16,6 +17,7 @@ import com.example.registrodeocupaciones.presentation.ocupaciones.form.Ocupacion
 // 1. Agrega las importaciones de las pantallas de Empleados
 import com.example.registrodeocupaciones.presentation.empleado.list.EmpleadoListScreen
 import com.example.registrodeocupaciones.presentation.empleado.form.EmpleadoFormScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun MineNavHost(
@@ -56,6 +58,22 @@ fun MineNavHost(
                 onEditEmpleado = { id ->
                     navController.navigate(Screen.EmpleadoForm(empleadoId = id))
                 }
+            )
+        }
+
+        composable<Screen.EmpleadoForm> {
+            EmpleadoFormScreen(
+                onNavigateBack = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable<Screen.HoraExtraList> {
+            HoraExtraListScreen(
+                onDrawer = { scope.launch { drawerState.open() } },
+                goToHoraExtra = { id -> navController.navigate(Screen.HoraExtra(id)) },
+                createHoraExtra = { navController.navigate(Screen.HoraExtra(0)) }
             )
         }
 

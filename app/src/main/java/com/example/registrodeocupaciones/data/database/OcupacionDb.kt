@@ -6,16 +6,21 @@ import androidx.room.TypeConverters
 import com.example.registrodeocupaciones.data.empleado.local.Converters
 import com.example.registrodeocupaciones.data.empleado.local.EmpleadoDao
 import com.example.registrodeocupaciones.data.empleado.local.EmpleadoEntity
+import com.example.registrodeocupaciones.data.horasExtras.local.HoraExtraDao
+import com.example.registrodeocupaciones.data.horasExtras.local.HoraExtraEntity
 import com.example.registrodeocupaciones.data.local.OcupacionDao
 import com.example.registrodeocupaciones.data.local.OcupacionEntity
 
 @Database(
-    entities = [OcupacionEntity::class, EmpleadoEntity::class],
-    version = 3,
+    entities = [OcupacionEntity::class,
+        EmpleadoEntity::class, HoraExtraEntity::class
+               ],
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class) // <-- 3. AGREGA ESTA LÍNEA AQUÍ
 abstract class OcupacionDb : RoomDatabase() {
     abstract fun ocupacionDao(): OcupacionDao
     abstract fun empleadoDao(): EmpleadoDao
+    abstract fun horaExtraDao(): HoraExtraDao
 }

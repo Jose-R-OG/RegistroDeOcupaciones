@@ -56,16 +56,7 @@ fun HoraExtraListScreen(
     val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Horas Extras (${state.horasExtras.size})") },
-                navigationIcon = {
-                    IconButton(onClick = onDrawer) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menú")
-                    }
-                }
-            )
-        },
+
         floatingActionButton = {
             FloatingActionButton(onClick = createHoraExtra) {
                 Icon(Icons.Default.Add, contentDescription = "Nueva Hora Extra")

@@ -4,6 +4,8 @@ import com.example.registrodeocupaciones.data.repository.OcupacionRepositoryData
 import com.example.registrodeocupaciones.domain.repository.OcupacionRepository
 import com.example.registrodeocupaciones.domain.empleado.repository.EmpleadoRepository
 import com.example.registrodeocupaciones.data.empleado.repository.EmpleadoRepositoryImpl
+import com.example.registrodeocupaciones.data.horasExtras.repository.HoraExtraRepositoryImpl
+import com.example.registrodeocupaciones.domain.horaExtra.repository.HoraExtraRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -20,4 +22,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindEmpleadoRepository(impl: EmpleadoRepositoryImpl): EmpleadoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindHoraExtraRepository(impl: HoraExtraRepositoryImpl): HoraExtraRepository
 }

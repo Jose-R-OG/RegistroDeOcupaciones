@@ -13,4 +13,6 @@ interface EmpleadoRepository {
     suspend fun delete(id: Int)
 
     suspend fun exists(Id: Int) : Boolean
+
+    suspend fun getByNombres(nombres: String): List<Empleado>
 }

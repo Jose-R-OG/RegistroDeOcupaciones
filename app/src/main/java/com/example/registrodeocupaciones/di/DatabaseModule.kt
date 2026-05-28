@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.registrodeocupaciones.data.local.OcupacionDao
 import com.example.registrodeocupaciones.data.database.OcupacionDb
 import com.example.registrodeocupaciones.data.empleado.local.EmpleadoDao
+import com.example.registrodeocupaciones.data.horasExtras.local.HoraExtraDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,5 +39,12 @@ object DatabaseModule {
     @Provides
     fun provideEmpleadoDao(db: OcupacionDb): EmpleadoDao {
         return db.empleadoDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideHoraExtraDao(database: OcupacionDb): HoraExtraDao
+    {
+        return database.horaExtraDao()
     }
 }

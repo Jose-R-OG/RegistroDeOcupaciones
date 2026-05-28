@@ -40,6 +40,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -128,14 +129,9 @@ fun EditHoraExtraScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = { Text(if (state.isNew) "Nueva Hora Extra" else "Editar Hora Extra") },
                 navigationIcon = {
-                    IconButton(onClick = onDrawer) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menú")
-                    }
-                },
-                actions = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Regresar")
                     }

@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val items = listOf(
                     TopLevelRoute("Empleado", Screen.EmpleadoList, Icons.Default.Person),
                     TopLevelRoute("Ocupacion", Screen.OcupacionList, Icons.Default.Home),
-                    TopLevelRoute("Horas Extras", Screen.OcupacionList, Icons.Default.Add)
+                    TopLevelRoute("Horas Extras", Screen.HoraExtraList, Icons.Default.Add)
                 )
                 Scaffold(
                     bottomBar = {

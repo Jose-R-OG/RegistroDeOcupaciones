@@ -1,15 +1,18 @@
 package com.example.registrodeocupaciones.presentation.HoraExtra.form
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -18,9 +21,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -42,16 +43,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,6 +67,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditHoraExtraScreen(
+    windowSizeClass: WindowSizeClass, // 1. Agregado el parámetro
     horaExtraId: Int?,
     onNavigateBack: () -> Unit,
     onDrawer: () -> Unit,
@@ -139,194 +145,204 @@ fun EditHoraExtraScreen(
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(8.dp)
-                .verticalScroll(rememberScrollState())
+                .padding(padding),
+            contentAlignment = Alignment.TopCenter
         ) {
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
+            val isExpandedScreen = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
 
-                    ExposedDropdownMenuBox(
-                        expanded = empleadoExpanded,
-                        onExpandedChange = { empleadoExpanded = it }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    // 3. Limitamos el ancho en pantallas grandes
+                    .widthIn(max = if (isExpandedScreen) 600.dp else Dp.Infinity)
+                    .padding(8.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        OutlinedTextField(
-                            value = if (state.empleadoNombre.isNotBlank())
-                                "#${state.empleadoId} - ${state.empleadoNombre}"
-                            else "",
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Empleado") },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = empleadoExpanded)
-                            },
-                            isError = state.empleadoError != null,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .menuAnchor()
-                        )
-                        ExposedDropdownMenu(
+
+                        ExposedDropdownMenuBox(
                             expanded = empleadoExpanded,
-                            onDismissRequest = { empleadoExpanded = false }
+                            onExpandedChange = { empleadoExpanded = it }
                         ) {
-                            state.empleados.forEach { empleado ->
-                                DropdownMenuItem(
-                                    text = { Text("#${empleado.empleadoId} - ${empleado.nombres}") },
-                                    onClick = {
-                                        viewModel.onEvent(
-                                            FormHoraExtraUiEvent.EmpleadoChanged(empleado.empleadoId)
-                                        )
-                                        empleadoExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    state.empleadoError?.let {
-                        Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = state.fechaDesde?.takeIf { it != 0L }
-                            ?.let { dateFormatter.format(Date(it)) } ?: "",
-                        onValueChange = {},
-                        label = { Text("Fecha Desde") },
-                        readOnly = true,
-                        isError = state.fechaDesdeError != null,
-                        trailingIcon = {
-                            IconButton(onClick = { showDateDesdePicker = true }) {
-                                Icon(Icons.Default.DateRange, contentDescription = "Fecha desde")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    state.fechaDesdeError?.let {
-                        Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = state.fechaHasta?.takeIf { it != 0L }
-                            ?.let { dateFormatter.format(Date(it)) } ?: "",
-                        onValueChange = {},
-                        label = { Text("Fecha Hasta") },
-                        readOnly = true,
-                        isError = state.fechaHastaError != null,
-                        trailingIcon = {
-                            IconButton(onClick = { showDateHastaPicker = true }) {
-                                Icon(Icons.Default.DateRange, contentDescription = "Fecha hasta")
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    state.fechaHastaError?.let {
-                        Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = if (state.horasTotales == 0.0) ""
-                        else state.horasTotales.toString(),
-                        onValueChange = {
-                            viewModel.onEvent(FormHoraExtraUiEvent.HorasTotalesChanged(it))
-                        },
-                        label = { Text("Horas Trabajadas en la Semana") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        isError = state.horasError != null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = if (state.horasNocturnas == 0.0) ""
-                        else state.horasNocturnas.toString(),
-                        onValueChange = {
-                            viewModel.onEvent(FormHoraExtraUiEvent.HorasNocturnasChanged(it))
-                        },
-                        label = { Text("Horas Nocturnas") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        isError = state.horasError != null,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    state.horasError?.let {
-                        Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
-                    }
-
-                    if (state.totalAPagar > 0) {
-                        Spacer(Modifier.height(16.dp))
-                        HorizontalDivider()
-                        Spacer(Modifier.height(8.dp))
-
-                        Text(
-                            "Resumen del Cálculo",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(Modifier.height(8.dp))
-
-                        ResumenItem("Sueldo por día", "$${state.sueldoPorDia}")
-                        ResumenItem("Sueldo por hora", "$${state.sueldoPorHora}")
-                        ResumenItem("Horas normales (≤44)", "${state.horasNormales} hrs")
-                        ResumenItem("Horas extras totales", "${state.horasExtrasTotales} hrs")
-                        ResumenItem("Horas al 35% (≤24 extras)", "${state.horasAl35} hrs → $${state.monto35}")
-                        ResumenItem("Horas al 100% (>24 extras)", "${state.horasAl100} hrs → $${state.monto100}")
-                        ResumenItem("Monto nocturno (+15%)", "$${state.montoNocturno}")
-
-                        Spacer(Modifier.height(8.dp))
-                        HorizontalDivider()
-                        Spacer(Modifier.height(8.dp))
-
-                        Text(
-                            "Total a Pagar: $${state.totalAPagar}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        HorizontalDivider()
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        OutlinedButton(
-                            onClick = { viewModel.onEvent(FormHoraExtraUiEvent.Save) },
-                            enabled = !state.isSaving
-                        ) {
-                            if (state.isSaving) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Icon(Icons.Default.Edit, contentDescription = null)
-                            }
-                            Spacer(Modifier.width(4.dp))
-                            Text(if (state.isNew) "Guardar" else "Actualizar")
-                        }
-
-                        if (!state.isNew) {
-                            OutlinedButton(
-                                onClick = { viewModel.onEvent(FormHoraExtraUiEvent.Delete) },
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
+                            OutlinedTextField(
+                                value = if (state.empleadoNombre.isNotBlank())
+                                    "#${state.empleadoId} - ${state.empleadoNombre}"
+                                else "",
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Empleado") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = empleadoExpanded)
+                                },
+                                isError = state.empleadoError != null,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = empleadoExpanded,
+                                onDismissRequest = { empleadoExpanded = false }
                             ) {
-                                Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                                state.empleados.forEach { empleado ->
+                                    DropdownMenuItem(
+                                        text = { Text("#${empleado.empleadoId} - ${empleado.nombres}") },
+                                        onClick = {
+                                            viewModel.onEvent(
+                                                FormHoraExtraUiEvent.EmpleadoChanged(empleado.empleadoId)
+                                            )
+                                            empleadoExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        state.empleadoError?.let {
+                            Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        OutlinedTextField(
+                            value = state.fechaDesde?.takeIf { it != 0L }
+                                ?.let { dateFormatter.format(Date(it)) } ?: "",
+                            onValueChange = {},
+                            label = { Text("Fecha Desde") },
+                            readOnly = true,
+                            isError = state.fechaDesdeError != null,
+                            trailingIcon = {
+                                IconButton(onClick = { showDateDesdePicker = true }) {
+                                    Icon(Icons.Default.DateRange, contentDescription = "Fecha desde")
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        state.fechaDesdeError?.let {
+                            Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        OutlinedTextField(
+                            value = state.fechaHasta?.takeIf { it != 0L }
+                                ?.let { dateFormatter.format(Date(it)) } ?: "",
+                            onValueChange = {},
+                            label = { Text("Fecha Hasta") },
+                            readOnly = true,
+                            isError = state.fechaHastaError != null,
+                            trailingIcon = {
+                                IconButton(onClick = { showDateHastaPicker = true }) {
+                                    Icon(Icons.Default.DateRange, contentDescription = "Fecha hasta")
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        state.fechaHastaError?.let {
+                            Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = if (state.horasTotales == 0.0) ""
+                            else state.horasTotales.toString(),
+                            onValueChange = {
+                                viewModel.onEvent(FormHoraExtraUiEvent.HorasTotalesChanged(it))
+                            },
+                            label = { Text("Horas Trabajadas en la Semana") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            isError = state.horasError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(Modifier.height(8.dp))
+
+                        OutlinedTextField(
+                            value = if (state.horasNocturnas == 0.0) ""
+                            else state.horasNocturnas.toString(),
+                            onValueChange = {
+                                viewModel.onEvent(FormHoraExtraUiEvent.HorasNocturnasChanged(it))
+                            },
+                            label = { Text("Horas Nocturnas") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            isError = state.horasError != null,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        state.horasError?.let {
+                            Text(it, color = Color.Red, style = MaterialTheme.typography.bodySmall)
+                        }
+
+                        if (state.totalAPagar > 0) {
+                            Spacer(Modifier.height(16.dp))
+                            HorizontalDivider()
+                            Spacer(Modifier.height(8.dp))
+
+                            Text(
+                                "Resumen del Cálculo",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(Modifier.height(8.dp))
+
+                            ResumenItem("Sueldo por día", "$${state.sueldoPorDia}")
+                            ResumenItem("Sueldo por hora", "$${state.sueldoPorHora}")
+                            ResumenItem("Horas normales (≤44)", "${state.horasNormales} hrs")
+                            ResumenItem("Horas extras totales", "${state.horasExtrasTotales} hrs")
+                            ResumenItem("Horas al 35% (≤24 extras)", "${state.horasAl35} hrs → $${state.monto35}")
+                            ResumenItem("Horas al 100% (>24 extras)", "${state.horasAl100} hrs → $${state.monto100}")
+                            ResumenItem("Monto nocturno (+15%)", "$${state.montoNocturno}")
+
+                            Spacer(Modifier.height(8.dp))
+                            HorizontalDivider()
+                            Spacer(Modifier.height(8.dp))
+
+                            Text(
+                                "Total a Pagar: $${state.totalAPagar}",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            HorizontalDivider()
+                        }
+
+                        Spacer(Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            OutlinedButton(
+                                onClick = { viewModel.onEvent(FormHoraExtraUiEvent.Save) },
+                                enabled = !state.isSaving
+                            ) {
+                                if (state.isSaving) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp
+                                    )
+                                } else {
+                                    Icon(Icons.Default.Edit, contentDescription = null)
+                                }
                                 Spacer(Modifier.width(4.dp))
-                                Text("Eliminar")
+                                Text(if (state.isNew) "Guardar" else "Actualizar")
+                            }
+
+                            if (!state.isNew) {
+                                OutlinedButton(
+                                    onClick = { viewModel.onEvent(FormHoraExtraUiEvent.Delete) },
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
+                                ) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("Eliminar")
+                                }
                             }
                         }
                     }

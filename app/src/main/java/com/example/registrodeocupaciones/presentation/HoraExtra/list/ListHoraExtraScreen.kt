@@ -2,12 +2,15 @@ package com.example.registrodeocupaciones.presentation.HoraExtra.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,6 +29,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HoraExtraListScreen(
+    windowSizeClass: WindowSizeClass, // 1. Agregamos el parámetro
     onDrawer: () -> Unit,
     goToHoraExtra: (Int) -> Unit,
     createHoraExtra: () -> Unit,
@@ -35,6 +39,13 @@ fun HoraExtraListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val empleadoState by empleadoViewModel.state.collectAsStateWithLifecycle()
     val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+
+    val columns = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1
+        WindowWidthSizeClass.Medium -> 2
+        WindowWidthSizeClass.Expanded -> 3
+        else -> 1
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -53,9 +64,11 @@ fun HoraExtraListScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
             } else {
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(columns),
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(state.horasExtras) { horaExtra ->

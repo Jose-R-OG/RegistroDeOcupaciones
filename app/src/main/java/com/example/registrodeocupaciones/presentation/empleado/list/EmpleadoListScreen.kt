@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,26 +26,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.registrodeocupaciones.domain.empleado.model.Empleado
 import kotlin.toString
 
 @Composable
 fun EmpleadoListScreen(
     viewModel: EmpleadoListViewModel = hiltViewModel(),
+    windowSizeClass: WindowSizeClass, // 1. Recibimos el tamaño de la ventana
     onAddEmpleado: () -> Unit,
     onEditEmpleado: (Int) -> Unit
 ){
@@ -49,6 +52,7 @@ fun EmpleadoListScreen(
 
     EmpleadoListBody (
         state = state,
+        windowSizeClass = windowSizeClass, // Lo pasamos al Body
         onEvent = viewModel::onEvent,
         onAddClick = onAddEmpleado,
         onEditClick = onEditEmpleado
@@ -59,11 +63,20 @@ fun EmpleadoListScreen(
 @Composable
 fun EmpleadoListBody(
     state: EmpleadoListUiState,
+    windowSizeClass: WindowSizeClass, // Recibimos el parámetro
     onEvent: (EmpleadoListUiEvent) -> Unit,
     onAddClick: () -> Unit,
     onEditClick: (Int) -> Unit
 ){
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // 2. Calculamos las columnas según el ancho de la pantalla
+    val columns = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1
+        WindowWidthSizeClass.Medium -> 2
+        WindowWidthSizeClass.Expanded -> 3
+        else -> 1
+    }
 
     LaunchedEffect(state.message) {
         state.message?.let { message ->
@@ -97,9 +110,12 @@ fun EmpleadoListBody(
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }else{
-                    LazyColumn(
+                    // 3. Cambiamos LazyColumn por LazyVerticalGrid para la adaptabilidad
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(columns),
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(
